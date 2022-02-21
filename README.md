@@ -139,3 +139,22 @@ I'm working my way though this book.  I'm currently at the cargo size command on
 https://docs.rust-embedded.org/book/start/qemu.html
 
 I ordered an STM32 Discovery but it is on back order so I have no idea when or if it will come...
+
+https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-l476rg.html
+https://www.st.com/en/microcontrollers-microprocessors/stm32l476rg.html#documentation
+02/21/2022 - I got the NUCLEO-L276RG STM32 development board!  I have been able to load and run
+code on the device with GDB/OpenOCD working following this tutorial:
+https://docs.rust-embedded.org/book/start/hardware.html
+
+With these modifications since I don't have an f3x board I have an h4x board:
+openocd -f interface/stlink.cfg -f target/stm32l4x.cfg
+
+in place of:
+openocd -f interface/stlink.cfg -f target/stm32f3x.cfg
+
+I also modified the memory.x file as shown below:
+   FLASH : ORIGIN = 0x08000000, LENGTH = 1024K
+   RAM : ORIGIN = 0x20000000, LENGTH = 64K
+
+I found this info in the following document: RM0351 Reference manual
+on page 76 there is info about the memory map
