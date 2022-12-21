@@ -16,7 +16,7 @@ stm32l4xx-hal = { version = "0.6.0", features = ["stm32l4x6"]}
 # panic-itm = "0.4.1"
 
 # Uncomment for the allocator example.
-# alloc-cortex-m = "0.4.0"
+# alloc-cortex-m = "0.4.4"
 
 # Uncomment for the device example.
 # Update `memory.x`, set target to `thumbv7em-none-eabihf` in `.cargo/config`,

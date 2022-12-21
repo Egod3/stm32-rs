@@ -95,8 +95,26 @@ pub fn get_temperature(
     temperature
 }
 
+#[allow(clippy::type_complexity)]
+pub fn get_humidity(
+    i2c_dev: &mut stm32l4xx_hal::i2c::I2c<
+        stm32l4xx_hal::pac::I2C1,
+        (
+            PB8<Alternate<AF4, Output<OpenDrain>>>,
+            PB9<Alternate<AF4, Output<OpenDrain>>>,
+        ),
+    >,
+) -> u16 {
+    let buf_i = [0xE5u8, 0];
+    let mut buf_o = [0u8; 2];
+    i2c_dev
+        .write_read(I2C_SECOND_ADDR, &buf_i, &mut buf_o)
+        .unwrap();
+    let humidity: u16 = (0xFF_00 & (buf_o[0] as u16) << 8) | 0x00_FF & (buf_o[1] as u16);
+    humidity
+}
+
 fn print_fw_version(fw_ver: u8) {
-    hprintln!().unwrap();
     if fw_ver == 0x20 {
         hprintln!("Device FW version: 2.0").unwrap();
     } else if fw_ver == 0xFF {
@@ -104,23 +122,22 @@ fn print_fw_version(fw_ver: u8) {
     } else {
         hprintln!("Device FW version: unknown").unwrap();
     }
-    hprintln!().unwrap();
 }
 
 fn print_sensor_id(sensor_id: u64) {
     let snb_3 = (0x0000_0000_FF00_0000 & sensor_id) >> 24;
-    hprintln!().unwrap();
+    let mut _dev_id: &str = Default::default();
     if snb_3 == 0x15 {
-        hprintln!("Temperature Device ID: Si7021").unwrap();
+        _dev_id = "Si7020";
     } else if snb_3 == 0x14 {
-        hprintln!("Temperature Device ID: Si7020").unwrap();
+        _dev_id = "Si7021";
     } else if snb_3 == 0x0D {
-        hprintln!("Temperature Device ID: Si7013").unwrap();
+        _dev_id = "Si7013";
     } else {
-        hprintln!("Temperature Device ID: unknown").unwrap();
+        _dev_id = "unknown";
     }
-    hprintln!("Device sensor ID: {:#08X}", sensor_id).unwrap();
-    hprintln!().unwrap();
+    hprintln!("Device ID: {}", _dev_id).unwrap();
+    hprintln!("RAW sensor ID: {:#08X}", sensor_id).unwrap();
 }
 
 /*
@@ -129,11 +146,19 @@ fn print_sensor_id(sensor_id: u64) {
  *
  */
 fn print_temperature(temperature: u16) {
-    hprintln!().unwrap();
     let temper_c = ((175.72 * temperature as f32) / 65536.0) - 46.85;
     let temper_f = (temper_c * 1.8) + 32.0;
-    hprintln!("Temperature: {}C {}F", temper_c, temper_f).unwrap();
-    hprintln!().unwrap();
+    hprintln!("Temperature: {} Celcius {} Fahrenheit", temper_c, temper_f).unwrap();
+}
+
+/*
+ * Formula for Relative Humidity % conversion
+ * ( (125 * RH_code) / 65536) - 6 = % Relative Humidity
+ *
+ */
+fn print_humidity(humidity: u16) {
+    let percent_rh: f32 = ((125.0 * humidity as f32) / 65536.0) - 6.0;
+    hprintln!("% Relative Humidity: {} % RH ", percent_rh).unwrap();
 }
 
 #[entry]
@@ -160,13 +185,17 @@ fn main() -> ! {
 
     let mut i2c1 = I2c::i2c1(dp.I2C1, (scl, sda), 400.khz(), clocks, &mut rcc.apb1r1);
 
+    hprintln!().unwrap();
+
     let fw_ver = get_fw_version(&mut i2c1);
     print_fw_version(fw_ver);
     let sensor_id = get_sensor_id(&mut i2c1);
     print_sensor_id(sensor_id);
-    let mut _temperature = get_temperature(&mut i2c1);
-    _temperature = get_temperature(&mut i2c1);
-    print_temperature(_temperature);
+
+    let temperature = get_temperature(&mut i2c1);
+    print_temperature(temperature);
+    let humidity = get_humidity(&mut i2c1);
+    print_humidity(humidity);
 
     panic!("End of the line chap... (main)");
 }
