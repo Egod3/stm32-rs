@@ -102,12 +102,6 @@ MEMORY
 $ cargo build
 ```
 
-## VS Code
-
-This template includes launch configurations for debugging CortexM programs with Visual Studio Code located in the `.vscode/` directory.
-See [.vscode/README.md](./.vscode/README.md) for more information.
-If you're not using VS Code, you can safely delete the directory from the generated project.
-
 # License
 
 This template is licensed under either of
@@ -134,11 +128,20 @@ to intervene to uphold that code of conduct.
 [CoC]: https://www.rust-lang.org/policies/code-of-conduct
 [team]: https://github.com/rust-embedded/wg#the-cortex-m-team
 
-## Ezra's Ish
-I'm working my way though this book.  I'm currently at the cargo size command on the QEMU page.
-https://docs.rust-embedded.org/book/start/qemu.html
 
-I ordered an STM32 Discovery but it is on back order so I have no idea when or if it will come...
+## Personal Section
+I worked my way though this book:
+https://docs.rust-embedded.org/book/start/hardware.html
+
+I am reading through this one now:
+https://docs.rust-embedded.org/discovery/f3discovery/index.html
+
+I ordered an STM32 Discovery got the board and have run embedded Rust apps on it!
+I have a basic write_read i2c function working to read the firmware version of the Si7021-A20
+My plan is to add support to read temperature and humidity for the Si7021-A20 sensor.
+Then add support for what ever other sensors I have.
+Then add support for UART/USART?
+    So I can have a debug print outside of GDB.. although GDB+OpenOCD works quite well!
 
 https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-l476rg.html
 https://www.st.com/en/microcontrollers-microprocessors/stm32l476rg.html#documentation
@@ -146,7 +149,26 @@ https://www.st.com/en/microcontrollers-microprocessors/stm32l476rg.html#document
 code on the device with GDB/OpenOCD working following this tutorial:
 https://docs.rust-embedded.org/book/start/hardware.html
 
-With these modifications since I don't have an f3x board I have an h4x board:
+### Running on STM32L476 Nucleo-64 board ###
+
+Option One (a bit more manual)
+1.) Open at least two shells using tmux.
+2.) In one shell run:
+    a.) openocd
+3.) In one shell run the command:
+    a.) gdb-multiarch -x openocd.gdb target/thumbv7em-none-eabi/debug/stm32-discovery-app
+4.) If everything is setup properly the above command 3.a) will start gdb and run our app.
+
+Option Two - Using cargo run
+1.) Open at least two shells using tmux.
+2.) In one shell run:
+    a.) openocd
+3.) In one shell run the command:
+    a.) cargo run
+4.) If everything is setup properly the above command 3.a) will start gdb and run our app.
+    a.) Look here for more info: https://docs.rust-embedded.org/book/start/hardware.html
+
+With these modifications since I don't have an f3x board I have an l4x board:
 openocd -f interface/stlink.cfg -f target/stm32l4x.cfg
 
 in place of:

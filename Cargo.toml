@@ -1,8 +1,8 @@
 [package]
 authors = ["Ezra Godfrey <ezra.godfrey@gmail.com>"]
-edition = "2018"
+edition = "2021"
 readme = "README.md"
-name = "stm32-discovery-app"
+name = "stm32-app"
 version = "0.1.0"
 
 [dependencies]
@@ -10,6 +10,7 @@ cortex-m = "0.6.0"
 cortex-m-rt = "0.6.10"
 cortex-m-semihosting = "0.3.3"
 panic-halt = "0.2.0"
+stm32l4xx-hal = { version = "0.6.0", features = ["stm32l4x6"]}
 
 # Uncomment for the panic example.
 # panic-itm = "0.4.1"
@@ -26,7 +27,7 @@ panic-halt = "0.2.0"
 
 # this lets you use `cargo fix`!
 [[bin]]
-name = "stm32-discovery-app"
+name = "stm32-app"
 test = false
 bench = false
 

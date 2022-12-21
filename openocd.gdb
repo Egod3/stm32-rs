@@ -34,6 +34,7 @@ monitor arm semihosting enable
 # # enable ITM port 0
 # monitor itm port 0 on
 
+# Program the application into flash-memory
 load
 
 # start the process but immediately halt the processor
