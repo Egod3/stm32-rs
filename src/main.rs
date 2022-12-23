@@ -1,30 +1,13 @@
 #![no_std]
 #![no_main]
 
-//use core::fmt::Write;
-use cortex_m_rt::entry; //, exception, ExceptionFrame};
+use cortex_m_rt::entry;
 use cortex_m_semihosting::hprintln;
 use panic_halt as _;
 use stm32l4xx_hal::gpio::{Alternate, OpenDrain, Output, AF4, PB8, PB9};
 use stm32l4xx_hal::{i2c::I2c, pac, prelude::*};
 
 const I2C_SECOND_ADDR: u8 = 0x40;
-
-#[allow(clippy::type_complexity)]
-pub fn i2c_write_read(
-    i2c_dev: &mut stm32l4xx_hal::i2c::I2c<
-        stm32l4xx_hal::pac::I2C1,
-        (
-            PB8<Alternate<AF4, Output<OpenDrain>>>,
-            PB9<Alternate<AF4, Output<OpenDrain>>>,
-        ),
-    >,
-    buf_o: &mut [u8; 6],
-    buf_i: [u8; 6],
-) {
-    // write data from buf_o to device then read data from device into buf_i
-    i2c_dev.write_read(I2C_SECOND_ADDR, &buf_i, buf_o).unwrap();
-}
 
 #[allow(clippy::type_complexity)]
 pub fn get_sensor_id(
@@ -38,22 +21,27 @@ pub fn get_sensor_id(
 ) -> u64 {
     let mut buf_i = [0xFAu8, 0x0Fu8];
     let mut buf_o = [0u8; 4];
-    i2c_dev
-        .write_read(I2C_SECOND_ADDR, &buf_i, &mut buf_o)
-        .unwrap();
-    let mut sensor_id: u64 = ((buf_o[0] as u64) << 56)
-        | ((buf_o[1] as u64) << 48)
-        | ((buf_o[2] as u64) << 40)
-        | ((buf_o[3] as u64) << 32);
+    let mut sensor_id: u64 = 0;
+    let mut result = i2c_dev.write_read(I2C_SECOND_ADDR, &buf_i, &mut buf_o);
+    if let Ok(_val) = result {
+        sensor_id = ((buf_o[0] as u64) << 56)
+            | ((buf_o[1] as u64) << 48)
+            | ((buf_o[2] as u64) << 40)
+            | ((buf_o[3] as u64) << 32);
+    } else {
+        hprintln!("error getting sensor ID: {:?}", result).unwrap();
+    }
     buf_i[0] = 0xFC;
     buf_i[1] = 0xC9;
-    i2c_dev
-        .write_read(I2C_SECOND_ADDR, &buf_i, &mut buf_o)
-        .unwrap();
-    sensor_id = (sensor_id + ((buf_o[0] as u64) << 24))
-        | ((buf_o[1] as u64) << 16)
-        | ((buf_o[2] as u64) << 8)
-        | (buf_o[3] as u64);
+    result = i2c_dev.write_read(I2C_SECOND_ADDR, &buf_i, &mut buf_o);
+    if let Ok(_val) = result {
+        sensor_id = (sensor_id + ((buf_o[0] as u64) << 24))
+            | ((buf_o[1] as u64) << 16)
+            | ((buf_o[2] as u64) << 8)
+            | (buf_o[3] as u64);
+    } else {
+        hprintln!("error getting sensor ID: {:?}", result).unwrap();
+    }
     sensor_id
 }
 
@@ -69,10 +57,13 @@ pub fn get_fw_version(
 ) -> u8 {
     let buf_i = [0x84u8, 0xB8u8];
     let mut buf_o = [0u8, 2];
-    i2c_dev
-        .write_read(I2C_SECOND_ADDR, &buf_i, &mut buf_o)
-        .unwrap();
-    let fw_ver: u8 = buf_o[0];
+    let mut fw_ver: u8 = 0;
+    let result = i2c_dev.write_read(I2C_SECOND_ADDR, &buf_i, &mut buf_o);
+    if let Ok(_val) = result {
+        fw_ver = buf_o[0];
+    } else {
+        hprintln!("error getting firmware version: {:?}", result).unwrap();
+    }
     fw_ver
 }
 
@@ -88,10 +79,13 @@ pub fn get_temperature(
 ) -> u16 {
     let buf_i = [0xE3u8, 0];
     let mut buf_o = [0u8; 2];
-    i2c_dev
-        .write_read(I2C_SECOND_ADDR, &buf_i, &mut buf_o)
-        .unwrap();
-    let temperature: u16 = (0xFF_00 & (buf_o[0] as u16) << 8) | 0x00_FF & (buf_o[1] as u16);
+    let result = i2c_dev.write_read(I2C_SECOND_ADDR, &buf_i, &mut buf_o);
+    let mut temperature: u16 = 0;
+    if let Ok(_val) = result {
+        temperature = (0xFF_00 & (buf_o[0] as u16) << 8) | 0x00_FF & (buf_o[1] as u16);
+    } else {
+        hprintln!("error getting temperature: {:?}", result).unwrap();
+    }
     temperature
 }
 
@@ -107,10 +101,13 @@ pub fn get_humidity(
 ) -> u16 {
     let buf_i = [0xE5u8, 0];
     let mut buf_o = [0u8; 2];
-    i2c_dev
-        .write_read(I2C_SECOND_ADDR, &buf_i, &mut buf_o)
-        .unwrap();
-    let humidity: u16 = (0xFF_00 & (buf_o[0] as u16) << 8) | 0x00_FF & (buf_o[1] as u16);
+    let result = i2c_dev.write_read(I2C_SECOND_ADDR, &buf_i, &mut buf_o);
+    let mut humidity: u16 = 0;
+    if let Ok(_val) = result {
+        humidity = (0xFF_00 & (buf_o[0] as u16) << 8) | 0x00_FF & (buf_o[1] as u16);
+    } else {
+        hprintln!("error getting humidity: {:?}", result).unwrap();
+    }
     humidity
 }
 
@@ -143,7 +140,6 @@ fn print_sensor_id(sensor_id: u64) {
 /*
  * Formula for temperature conversion
  * ( (175.72 * Temp_code) / 65536) - 46.85 = Temperature in Celcius
- *
  */
 fn print_temperature(temperature: u16) {
     let temper_c = ((175.72 * temperature as f32) / 65536.0) - 46.85;
@@ -154,7 +150,6 @@ fn print_temperature(temperature: u16) {
 /*
  * Formula for Relative Humidity % conversion
  * ( (125 * RH_code) / 65536) - 6 = % Relative Humidity
- *
  */
 fn print_humidity(humidity: u16) {
     let percent_rh: f32 = ((125.0 * humidity as f32) / 65536.0) - 6.0;
@@ -163,8 +158,6 @@ fn print_humidity(humidity: u16) {
 
 #[entry]
 fn main() -> ! {
-    //let _periph = cortex_m::Peripherals::take().unwrap();
-    //let dp = stm32::Peripherals::take().unwrap();
     let dp = pac::Peripherals::take().unwrap();
     let mut flash = dp.FLASH.constrain();
     let mut rcc = dp.RCC.constrain();
