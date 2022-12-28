@@ -180,3 +180,11 @@ I also modified the memory.x file as shown below:
 
 I found this info in the following document: RM0351 Reference manual
 on page 76 there is info about the memory map
+
+## Example Ouptut ##
+Device FW version: 2.0
+Device ID: Si7020
+RAW sensor ID: 0x3D891CCC15FFB5FF
+Temperature: 19.613434 Celcius 67.304184 Fahrenheit
+% Relative Humidity: 32.311005 % RH
+
