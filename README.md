@@ -145,11 +145,14 @@ Then add support for UART/USART?
 
 https://www.st.com/content/st_com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-l476rg.html
 https://www.st.com/en/microcontrollers-microprocessors/stm32l476rg.html#documentation
-02/21/2022 - I got the NUCLEO-L276RG STM32 development board!  I have been able to load and run
+02/21/2022 - I got the NUCLEO64-L276RG STM32 dev board!  I have been able to load and run
 code on the device with GDB/OpenOCD working following this tutorial:
 https://docs.rust-embedded.org/book/start/hardware.html
 
-### Running on STM32L476 Nucleo-64 board ###
+### Running on STM32L476RG Nucleo-64 board ###
+### NUCLEO-L476RG board for STM32L476RGT6 MCU with 80 MHz Cortex-M4F core, ###
+### 1024 KB flash (HW ECC), 96 KB SRAM, 32 KB SRAM (HW parity), ###
+### external quad-SPI memory interface, external static memory interface. ###
 
 Option One (a bit more manual)
 1.) Open at least two shells using tmux.

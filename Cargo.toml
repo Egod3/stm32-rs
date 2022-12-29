@@ -2,7 +2,7 @@
 authors = ["Ezra Godfrey <ezra.godfrey@gmail.com>"]
 edition = "2021"
 readme = "README.md"
-name = "stm32-app"
+name = "stm32-rs"
 version = "0.1.0"
 
 [dependencies]
@@ -28,7 +28,7 @@ si70xx = { path = "../../libs/si70xx" }
 
 # this lets you use `cargo fix`!
 [[bin]]
-name = "stm32-app"
+name = "stm32-rs"
 test = false
 bench = false
 
