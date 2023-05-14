@@ -5,8 +5,6 @@ use cortex_m_rt::entry;
 use cortex_m_semihosting::hprintln;
 use panic_halt as _;
 
-use si70xx;
-
 #[entry]
 fn main() -> ! {
     let mut i2c1 = si70xx::dev_init();
