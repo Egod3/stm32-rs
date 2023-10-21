@@ -37,5 +37,5 @@ monitor arm semihosting enable
 # Program the application into flash-memory
 load
 
-# start the process but immediately halt the processor
-stepi
+# start the application running
+cont

@@ -48,15 +48,14 @@ Option Two (a bit more manual)
 2.) In one shell run:
     a.) openocd
 3.) In one shell run the command:
-    a.) gdb-multiarch -x openocd.gdb target/thumbv7em-none-eabi/debug/stm32-discovery-app
+    a.) gdb-multiarch -x openocd.gdb target/thumbv7em-none-eabi/debug/stm32-rs
 4.) If everything is setup properly the above command 3.a) will start gdb and run our app.
 
-
 With these modifications since I don't have an f3x board I have an l4x board:
-openocd -f interface/stlink.cfg -f target/stm32l4x.cfg
+    openocd -f interface/stlink.cfg -f target/stm32l4x.cfg
 
 in place of:
-openocd -f interface/stlink.cfg -f target/stm32f3x.cfg
+    openocd -f interface/stlink.cfg -f target/stm32f3x.cfg
 
 I also modified the memory.x file as shown below:
    FLASH : ORIGIN = 0x08000000, LENGTH = 1024K
@@ -65,10 +64,25 @@ I also modified the memory.x file as shown below:
 I found this info in the following document: RM0351 Reference manual
 on page 76 there is info about the memory map
 
+## TODO:
+- Look into getting the ITM port working as it is much faster than semihosting.
+
 ## Example Ouptut ##
 Device FW version: 2.0
-Device ID: Si7020
+Device ID: Si7021
 RAW sensor ID: 0x3D891CCC15FFB5FF
 Temperature: 19.613434 Celcius 67.304184 Fahrenheit
 % Relative Humidity: 32.311005 % RH
 
+## STLINK Info
+I updated the STLINK FW on my board from version:
+Info : STLINK V2J33M25 (API v2) VID:PID 0483:374B
+
+To version:
+Info : STLINK V2J43M28 (API v2) VID:PID 0483:374B
+
+## After installing other FW like Zephyr RTOS or TockOS
+https://github.com/japaric/f3/issues/84#:~:text=Keep%20the%20reset%20button%20pressed%20while%20connecting%20with,instruction.%20In%20arm-none-eabi-gdb%20type%20load%20and%20release%20reset.
+
+Hold the Reset button on the board (the black one) when launching openocd and gdb.
+This seems to run the board in some other mode and allows everything to attach!
