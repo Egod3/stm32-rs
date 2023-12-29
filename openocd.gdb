@@ -10,29 +10,22 @@ set backtrace limit 32
 break DefaultHandler
 break HardFault
 break rust_begin_unwind
-# # run the next few lines so the panic message is printed immediately
-# # the number needs to be adjusted for your panic handler
-# commands $bpnum
-# next 4
-# end
 
-# *try* to stop at the user entry point (it might be gone due to inlining)
-# break main
-
-monitor arm semihosting enable
+# To re-enable hprintln!() macro logs add this line back
+#monitor arm semihosting enable
 
 # # send captured ITM to the file itm.fifo
 # # (the microcontroller SWO pin must be connected to the programmer SWO pin)
-# # 8000000 must match the core clock frequency
-# monitor tpiu config internal itm.txt uart off 8000000
-
-# # OR: make the microcontroller SWO pin output compatible with UART (8N1)
-# # 8000000 must match the core clock frequency
-# # 2000000 is the frequency of the SWO pin
-# monitor tpiu config external uart off 8000000 2000000
+# # 16000000 must match the core clock frequency
+# Followed instructions from here: https://docs.rs/itm/0.2.1/itm/
+# Run this with: $ itmdump -f /tmp/itm.fifo -F
+# to get these logs
+monitor stm32l4x.tpiu disable
+monitor stm32l4x.tpiu configure -protocol uart -traceclk 16000000 -pin-freq 2000000 -output /tmp/itm.fifo -formatter off
+monitor stm32l4x.tpiu enable
 
 # # enable ITM port 0
-# monitor itm port 0 on
+monitor itm port 0 on
 
 # Program the application into flash-memory
 load
