@@ -49,6 +49,7 @@ It is primarily for me to use Rust in an embedded context.<br>
 # Additional Information
 
 ## Future Work
+* Fix ITM based logging after upgrading to cortex-m-rt lib v0.7.7...
 * Add a logging or some type of macro that can be used to enable the different logging options:<br>
     * UART prints, semi-host prints (hprintln!()), ITM, etc.)<br>
     * Look at cortex-m-log which has support for semi-hosting, ITM and Dummy destinations and log functionality.

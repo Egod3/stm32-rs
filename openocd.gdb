@@ -12,7 +12,7 @@ break HardFault
 break rust_begin_unwind
 
 # To re-enable hprintln!() macro logs add this line back
-#monitor arm semihosting enable
+monitor arm semihosting enable
 
 # # send captured ITM to the file itm.fifo
 # # (the microcontroller SWO pin must be connected to the programmer SWO pin)

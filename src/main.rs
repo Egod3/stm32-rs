@@ -7,8 +7,6 @@ use cortex_m_rt::entry;
 use panic_halt as _;
 use stm32l4xx_hal::gpio::GpioExt;
 use stm32l4xx_hal::gpio::*;
-use stm32l4xx_hal::prelude::OutputPin;
-use stm32l4xx_hal::prelude::*;
 use stm32l4xx_hal::rcc::RccExt;
 use stm32l4xx_hal::stm32::Peripherals;
 
@@ -41,7 +39,7 @@ fn main() -> ! {
         // of 16_000_000
         let cp = cortex_m::Peripherals::steal();
         let mut _timer = Delay::new(cp.SYST, 16_000_000);
-        let _result = led.set_high();
+        led.set_high();
 
         let mut led_state: bool = false;
         loop {
@@ -49,6 +47,8 @@ fn main() -> ! {
             let humidity = si70xx::get_rel_humidity(&mut i2c1);
             si70xx::iprint_temperature(stim, temperature);
             si70xx::iprint_humidity(stim, humidity);
+            si70xx::hprint_temperature(temperature);
+            si70xx::hprint_humidity(humidity);
 
             _timer.delay_ms(1000_u32);
             if led_state {
@@ -58,6 +58,10 @@ fn main() -> ! {
                 toggle_led(stim, &mut led, PinState::Low);
                 led_state = true;
             }
+            iprintln!(
+                stim,
+                "stm32-rs application which displays relative temp/humidity, via ITM\n"
+            );
         }
     }
 }
@@ -70,7 +74,6 @@ fn led_init() -> stm32l4xx_hal::gpio::PA5<stm32l4xx_hal::gpio::Output<stm32l4xx_
         let mut rcc = dp.RCC.constrain();
         let mut gpioa = dp.GPIOA.split(&mut rcc.ahb2);
 
-        // Configure PA5 for LED and output GPIO and then return it.
         gpioa
             .pa5
             .into_push_pull_output(&mut gpioa.moder, &mut gpioa.otyper)
@@ -78,14 +81,15 @@ fn led_init() -> stm32l4xx_hal::gpio::PA5<stm32l4xx_hal::gpio::Output<stm32l4xx_
 }
 
 fn toggle_led(
-    stim: &mut cortex_m::peripheral::itm::Stim,
+    _stim: &mut cortex_m::peripheral::itm::Stim,
     led: &mut PA5<Output<PushPull>>,
     state: PinState,
 ) {
-    let result = led.set_state(state);
-    if result.is_err() {
-        iprintln!(stim, "Error setting led state: {:?}", result.err());
-    }
+    led.set_state(state);
+    //let result = led.set_state(state);
+    //if result.is_err() {
+    //    iprintln!(_stim, "Error setting led state: {:?}", result.err());
+    //}
 }
 
 // TODO: Get tests working..
