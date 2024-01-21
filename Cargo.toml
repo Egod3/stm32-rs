@@ -13,6 +13,8 @@ cortex-m-semihosting = "0.5.*"
 panic-halt = "0.2.*"
 stm32l4xx-hal = { version = "0.7.*", features = ["stm32l476"]}
 si70xx = { version = "0.3.*", path = "../../libs/si70xx" }
+# Enable if you want to use the UART
+uart-stm32 = { version = "0.2.*", path = "../../libs/uart-stm32" }
 
 # Uncomment for the panic example.
 # panic-itm = "0.4.1"
