@@ -7,6 +7,8 @@ It is primarily for me to use Rust in an embedded context.<br>
 
 [STM32 L476RG SOC](https://www.st.com/en/microcontrollers-microprocessors/stm32l476rg.html#documentation)
 
+[STM32l4xx_hal Rust docs](https://docs.rs/stm32l4xx-hal/latest/stm32l4xx_hal/)
+
 [Embedded Rust Book](https://docs.rust-embedded.org/book/start/hardware.html)
 
 [Additional info on ITM and tools](https://docs.rs/itm/0.2.1/itm/)
@@ -18,33 +20,33 @@ It is primarily for me to use Rust in an embedded context.<br>
  ***external quad-SPI memory interface, external static memory interface.***<br>
 
 ### Option One - Using cargo run with ITM logging<br>
-1.) Open at least three shells using tmux.<br>
-2.) In one shell run:<br>
-    a.) openocd<br>
-3.) Start itmdump:<br>
-    a.) itmdump -f /tmp/itm.fifo -F<br>
-4.) In one shell run the command:<br>
-    a.) cargo run<br>
-5.) If everything is setup properly the above command 4.a) will start gdb and run our app.<br>
+1. Open at least three shells using tmux.<br>
+2. In one shell run:<br>
+    a. openocd<br>
+3. Start itmdump:<br>
+    a. itmdump -f /tmp/itm.fifo -F<br>
+4. In one shell run the command:<br>
+    a. cargo run<br>
+5. If everything is setup properly the above command 4.a will start gdb and run our app.<br>
 
 ### Option Two - Using cargo run with UART<br>
-1.) Open at least three shells using tmux.<br>
-2.) In one shell run:<br>
-    a.) openocd<br>
-3.) Start minicom:<br>
-    a.) minicom -D /dev/ttyACM0 -b 921600<br>
-4.) In one shell run the command:<br>
-    a.) cargo run<br>
-5.) If everything is setup properly the above command 4.a) will start gdb and run our app.<br>
+1. Open at least three shells using tmux.<br>
+2. In one shell run:<br>
+    a. openocd<br>
+3. Start minicom:<br>
+        a. minicom -D /dev/ttyACM0 -b 921600<br>
+    4. In one shell run the command:<br>
+    a. cargo run<br>
+5. If everything is setup properly the above command 4.a will start gdb and run our app.<br>
 
 ### Option Three - running gdb manually with semi-hosting <br>
-1.) Open at least two shells using tmux.<br>
-2.) In one shell run:<br>
-    a.) openocd<br>
-3.) In one shell run the command:<br>
-    a.) gdb-multiarch -x openocd.gdb target/thumbv7em-none-eabi/debug/stm32-rs<br>
-4.) If everything is setup properly the above command 3.a) will start gdb and run our app.<br>
-    a.) Look here for more info: https://docs.rust-embedded.org/book/start/hardware.html<br>
+1. Open at least two shells using tmux.<br>
+2. In one shell run:<br>
+    a. openocd<br>
+3. In one shell run the command:<br>
+    a. gdb-multiarch -x openocd.gdb target/thumbv7em-none-eabi/debug/stm32-rs<br>
+4. If everything is setup properly the above command 3.a will start gdb and run our app.<br>
+    a. Look here for more info: https://docs.rust-embedded.org/book/start/hardware.html<br>
 
 # Additional Information
 
